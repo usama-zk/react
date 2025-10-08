@@ -2,6 +2,67 @@
 <html>
   <head>
     <title>Chat Bot</title>
+    <style>
+      body {
+        font-family: Arial;
+        margin: 0;
+        padding: 0;
+      }
+      .send-button {
+        background-color: rgb(25, 135, 84);
+        padding: 12px 20px;
+        margin-left: 10px;
+        border: none;
+        border-radius: 10px;
+        font-size: 15px;
+        cursor: pointer;
+        color: white;
+      }
+
+      .chat-input-container {
+        display: flex;
+        margin-bottom: 60px;
+      }
+      .chat-input {
+        padding: 12px 15px;
+        border-radius: 10px;
+        border-width: 1px;
+        font-size: 15px;
+        flex-grow: 1;
+      }
+      .app-container {
+        max-width: 600px;
+        margin: 0 auto;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      .chat-message-robot {
+        display: flex;
+        justify-content: start;
+        align-items: start;
+      }
+      .chat-message-user {
+        display: flex;
+        justify-content: end;
+        align-items: start;
+      }
+      .chat-message-text {
+        background-color: rgb(238, 238, 238);
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-right: 10px;
+        margin-left: 10px;
+        margin-bottom: 20px;
+        max-width: 300px;
+      }
+      .chat-message-container {
+        flex-grow: 1;
+        margin-top: 20px;
+        overflow: scroll;
+        scrollbar-width: none;
+      }
+    </style>
   </head>
   <body>
     <div class="js-container"></div>
@@ -41,31 +102,34 @@
         }
 
         return (
-          <>
+          <div className="chat-input-container">
             <input
               placeholder="Send a message to chat bot"
               size="30"
               type="text"
               onChange={saveInput}
               value={inputText}
+              className="chat-input"
             />
-            <button onClick={sendMessage}>Send</button>
-          </>
+            <button onClick={sendMessage} className="send-button">
+              Send
+            </button>
+          </div>
         );
       }
 
       function Message({ message, sender }) {
         if (sender === "robot") {
           return (
-            <div>
+            <div className="chat-message-robot">
               <img src="../robot.jpg" alt="" width="50" />
-              {message}
+              <div className="chat-message-text">{message}</div>
             </div>
           );
         } else {
           return (
-            <div>
-              {message}
+            <div className="chat-message-user">
+              <div className="chat-message-text">{message}</div>
               <img src="../user.jpg" alt="" width="50" />
             </div>
           );
@@ -73,8 +137,15 @@
       }
 
       function Chat({ chatMessages }) {
+        const chatMessageRef = React.useRef(null);
+        React.useEffect(() => {
+          const containerElem = chatMessageRef.current;
+          if (containerElem) {
+            containerElem.scrollTop = containerElem.scrollHeight;
+          }
+        }, [chatMessages]);
         return (
-          <>
+          <div className="chat-message-container" ref={chatMessageRef}>
             {chatMessages.map((chatMessage) => {
               return (
                 <Message
@@ -84,7 +155,7 @@
                 />
               );
             })}
-          </>
+          </div>
         );
       }
 
@@ -97,13 +168,13 @@
           { message: "Hello! How i can help you?", sender: "user", id: "5" },
         ]);
         return (
-          <>
+          <div className="app-container">
+            <Chat chatMessages={chatMessages} />
             <Input
               chatMessages={chatMessages}
               setChatMessages={setChatMessages}
             />
-            <Chat chatMessages={chatMessages} />
-          </>
+          </div>
         );
       }
       const container = document.querySelector(".js-container");
